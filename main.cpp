@@ -8,12 +8,12 @@ template <typename T>
 T hit_sphere(const coord<T> &center, const T radius, const ray<T> r)
 {
     const auto oc = r.origin() - center;
-    const auto a = dot(r.direction(), r.direction());
-    const auto b = 2.0 * dot(oc, r.direction());
-    const auto c = dot(oc, oc) - radius*radius;
-    const auto discriminant = b*b - 4*a*c;
+    const auto a = r.direction().length_squared();
+    const auto half_b = dot(oc, r.direction());
+    const auto c = oc.length_squared() - radius*radius;
+    const auto discriminant = half_b*half_b - a*c;
    
-    return discriminant >= 0.0 ? (-b - std::sqrt(discriminant)) / (2.0*a) : -1.0;
+    return discriminant >= 0.0 ? (-half_b - std::sqrt(discriminant)) / a : -1.0;
 }
 
 template <typename T>
