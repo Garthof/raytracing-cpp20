@@ -24,6 +24,8 @@ public:
         std::copy(l.begin(), l.end(), e.begin());
     }
 
+    virtual ~vec3() = default;
+
     T x() const
     {
         return vec3<T>::e[0];
