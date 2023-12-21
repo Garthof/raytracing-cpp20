@@ -12,7 +12,10 @@ template <typename T>
 class vec3 
 {
 public:
-    std::array<T, 3> e;
+    using array_type = std::array<T, 3>;
+    using index_type = array_type::size_type;
+
+    array_type e;
 
     vec3(): vec3{T{}, T{}, T{}} {}
 
@@ -56,12 +59,12 @@ public:
         return vec3<T>::e[2];
     }
 
-    auto operator[](int i) const -> T
+    auto operator[](index_type i) const -> T
     {
         return e[i];
     }
 
-    auto operator[](int i) -> T & 
+    auto operator[](index_type i) -> T & 
     {
         return e[i];
     }

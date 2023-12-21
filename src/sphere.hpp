@@ -8,7 +8,7 @@ template <typename T>
 class sphere : public hittable<T>
 {
 public:
-    sphere(coord<T> center, T radius) : center{std::move(center)}, radius{radius}
+    sphere(coord<T> t_center, T t_radius) : center{std::move(t_center)}, radius{t_radius}
     {}
 
     auto hit(ray<T> r, T ray_tmin, T ray_tmax) const -> std::optional<hit_record<T>> override 
