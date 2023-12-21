@@ -1,35 +1,26 @@
 #include <iostream>
 
 #include "color.hpp"
+#include "hittable.hpp"
+#include "hittable_list.hpp"
 #include "ray.hpp"
+#include "rtweekend.hpp"
+#include "sphere.hpp"
 #include "vec3.hpp"
 
 template <typename T>
-T hit_sphere(const coord<T> &center, const T radius, const ray<T> r)
+auto ray_color(const ray<T> r, const hittable<T> &world) -> color<T>
 {
-    const auto oc = r.origin() - center;
-    const auto a = r.direction().length_squared();
-    const auto half_b = dot(oc, r.direction());
-    const auto c = oc.length_squared() - radius*radius;
-    const auto discriminant = half_b*half_b - a*c;
-   
-    return discriminant >= 0.0 ? (-half_b - std::sqrt(discriminant)) / a : -1.0;
-}
-
-template <typename T>
-color<T> ray_color(const ray<T> r) 
-{
-    if (const auto t = hit_sphere({0.0, 0.0, -1.0}, 0.5, r); t > 0.0) {
-        const auto N = (r.at(t) - vec3{0.0, 0.0, -1.0}).unit_vector();
-        return static_cast<color<T>>(0.5 * (N + vec3{1.0, 1.0, 1.0}));
+    const auto unit_direction = r.direction.unit_vector();
+    if (const auto rec = world.hit(std::move(r), 0., rt::infinity)) {
+        return static_cast<color<T>>(0.5 * (rec->normal + vec3{1.0, 1.0, 1.0}));
     }
 
-    const auto unit_direction = r.direction().unit_vector();
     const auto a = (unit_direction.y() + 1.0) * 0.5;
     return static_cast<color<T>>((1.0 - a) * color{1.0, 1.0, 1.0} + a * color{0.5, 0.7, 1.0});
 }
 
-int main()
+auto main() -> int
 {
     // Image
 
@@ -41,6 +32,12 @@ int main()
         const auto tentative_image_height = static_cast<int>(image_width / aspect_ratio);
         return tentative_image_height < 1 ? 1 : tentative_image_height;
     }();
+
+    // World
+
+    hittable_list<rt::scalar_type> world;
+    world.add(std::make_shared<sphere<rt::scalar_type>>(coord{0., 0., -1.}, 0.5));
+    world.add(std::make_shared<sphere<rt::scalar_type>>(coord{0., -100.5, -1.}, 100.));
 
     // Camera
 
@@ -73,7 +70,7 @@ int main()
             const auto ray_direction = pixel_center - camera_center;
             const auto r = ray{camera_center, ray_direction};
 
-            const auto pixel_color = ray_color(r);
+            const auto pixel_color = ray_color(r, world);
             std::cout << pixel_color;
         }
     }
