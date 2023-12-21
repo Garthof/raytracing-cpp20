@@ -8,6 +8,9 @@ template <typename T>
 class sphere : public hittable<T>
 {
 public:
+    sphere(coord<T> center, T radius) : center{std::move(center)}, radius{radius}
+    {}
+
     auto hit(ray<T> r, T ray_tmin, T ray_tmax) const -> std::optional<hit_record<T>> override 
     {
         const auto sqr = [](const auto v) {
@@ -29,18 +32,18 @@ public:
             return ray_tmin < v && v < ray_tmax;
         };
 
-        const auto find_root_in_range = [&]() -> std::optional<T> {
+        const auto find_root_in_range = [&]() {
             auto root = (-half_b - sqrtd) / a;
             if (!in_range(root)) {
                 root = (-half_b + sqrtd) / a;
             }
-            return in_range(root) ? root : std::nullopt;
+            return in_range(root) ? std::optional<T>{root} : std::nullopt;
         };
 
         if (const auto root = find_root_in_range()) {
-            const auto pos = r.at(root);
-            const auto outward_normal = static_cast<vec3<T>>((pos - center) / radius).unit_length();
-            return hit_record<T>{std::move(r), root, outward_normal};
+            const auto pos = r.at(*root);
+            const auto outward_normal = static_cast<vec3<T>>((pos - center) / radius).unit_vector();
+            return hit_record<T>{std::move(r), *root, outward_normal};
         }
 
         return std::nullopt;

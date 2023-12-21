@@ -26,52 +26,52 @@ public:
 
     virtual ~vec3() = default;
 
-    T x() const
+    auto x() const -> T
     {
         return vec3<T>::e[0];
     }
 
-    T y() const
+    auto y() const -> T
     {
         return vec3<T>::e[1];
     }
 
-    T z() const 
+    auto z() const -> T
     {
         return vec3<T>::e[2];
     }
 
-    T &x()
+    auto x() -> T &
     {
         return vec3<T>::e[0];
     }
 
-    T &y()
+    auto y() -> T &
     {
         return vec3<T>::e[1];
     }
 
-    T &z()
+    auto z() -> T &
     {
         return vec3<T>::e[2];
     }
 
-    T operator[](int i) const 
+    auto operator[](int i) const -> T
     {
         return e[i];
     }
 
-    T& operator[](int i) 
+    auto operator[](int i) -> T & 
     {
         return e[i];
     }
 
-    vec3<T> operator-() const
+    auto operator-() const -> vec3<T>
     { 
         return {-e[0], -e[1], -e[2]}; 
     }
 
-    vec3<T>& operator+=(const vec3<T> v)
+    auto operator+=(const vec3<T> v) -> vec3<T> & 
     {
         e[0] += v[0];
         e[1] += v[1];
@@ -79,13 +79,13 @@ public:
         return *this;
     }
 
-    vec3<T>& operator-=(const vec3<T> v)
+    auto operator-=(const vec3<T> v) -> vec3<T> & 
     {
         *this += -v;
         return *this;
     }
 
-    inline vec3<T> &operator*=(const vec3<T> v)
+    auto operator*=(const vec3<T> v) -> vec3<T> &
     {
         e[0] *= v[0];
         e[1] *= v[1];
@@ -94,7 +94,7 @@ public:
     }
 
     template<typename U>
-    vec3<T>& operator*=(const U u)
+    auto operator*=(const U u) -> vec3<T> &
     {
         e[0] *= static_cast<T>(u);
         e[1] *= static_cast<T>(u);
@@ -103,84 +103,85 @@ public:
     }
 
     template<typename U>
-    vec3<T>& operator/=(const U u)
+    auto operator/=(const U u) -> vec3<T> & 
     {
         return *this *= static_cast<T>(1) / static_cast<T>(u);
     }
 
-    T length() const 
+    auto length() const -> T 
     {
         return std::sqrt(length_squared());
     }
 
-    T length_squared() const 
+    auto length_squared() const -> T 
     {
         return std::accumulate(e.begin(), e.end(), T{}, 
                                [](const T a, const T b) { return a + b * b; });
     }
 
-    vec3<T> unit_vector() const 
+    auto unit_vector() const -> vec3<T> 
     {
         return *this / length();
     }
 };
 
 template <typename T>
-inline std::ostream & operator<<(std::ostream &out, const vec3<T> v)
+inline auto operator<<(std::ostream &out, const vec3<T> v) -> std::ostream &
 {
     return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
 }
 
 template <typename T>
-inline vec3<T> operator+(vec3<T> lhs, const vec3<T> rhs) 
+inline auto operator+(vec3<T> lhs, const vec3<T> rhs) -> vec3<T> 
 {
     lhs += rhs;
     return lhs;
 }
 
 template <typename T>
-inline vec3<T> operator-(vec3<T> lhs, const vec3<T> rhs) 
+inline auto operator-(vec3<T> lhs, const vec3<T> rhs) -> vec3<T> 
 {
     lhs -= rhs;
     return lhs;
 }
 
 template <typename T>
-inline vec3<T> operator*(vec3<T> lhs, const vec3<T> rhs) 
+inline auto operator*(vec3<T> lhs, const vec3<T> rhs) -> vec3<T> 
 {
     lhs *= rhs;
     return lhs;
 }
 
 template <typename T, typename U>
-inline vec3<T> operator*(const U u, vec3<T> v) 
+inline auto operator*(const U u, vec3<T> v) -> vec3<T> 
 {
     v *= u;
     return v;
 }
 
 template <typename T, typename U>
-inline vec3<T> operator*(vec3<T> v, const U u) 
+inline auto operator*(vec3<T> v, const U u) -> vec3<T> 
 {
     return u * std::move(v);
 }
 
 template <typename T, typename U>
-inline vec3<T> operator/(vec3<T> v, const U u) 
+inline auto operator/(vec3<T> v, const U u) -> vec3<T> 
 {
     v /= u;
     return v;
 }
 
 template <typename T>
-inline T dot(const vec3<T> lhs, const vec3<T> rhs) 
+inline auto dot(const vec3<T> lhs, const vec3<T> rhs) -> T 
 {
     const auto product = lhs * rhs;
     return std::accumulate(product.e.begin(), product.e.end(), T{});
 }
 
 template <typename T>
-inline vec3<T> cross(const vec3<T> u, const vec3<T> v) {
+inline auto cross(const vec3<T> u, const vec3<T> v) -> vec3<T> 
+{
     return {u.e[1] * v.e[2] - u.e[2] * v.e[1],
             u.e[2] * v.e[0] - u.e[0] * v.e[2],
             u.e[0] * v.e[1] - u.e[1] * v.e[0]};

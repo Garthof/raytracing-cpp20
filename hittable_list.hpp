@@ -2,6 +2,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "hittable.hpp"
@@ -10,39 +11,36 @@ template<typename T>
 class hittable_list : public hittable<T>
 {
 public:
-    using object_t = std::shared_ptr<hittable<const T>>;
-    std::vector<object_t> objects;
+    using object_type = std::shared_ptr<hittable<T>>;
+    std::vector<object_type> objects;
 
     hittable_list() = default;
 
-    explicit hittable_list(const std::initializer_list<const T> l) 
+    explicit hittable_list(const std::initializer_list<object_type> list) 
     {
-        for (const auto &t: l) {
-            add(t);
+        for (const auto obj: list) {
+            add(std::move(obj));
         }
     }
 
-    auto add(const T &t) -> void 
+    auto add(object_type obj) -> void 
     {
-        objects.push_back(t);
+        objects.emplace_back(std::move(obj));
     }
 
     auto hit(const ray<T> r, const T ray_tmin, const T ray_tmax) const -> std::optional<hit_record<T>> override
     {
-        std::optional<hit_record<T>> rec = std::nullopt;
-
-        auto hit_anything = false;
+        auto recs = std::vector<hit_record<T>>{};
         auto closest_so_far = ray_tmax;
 
         for (const auto &obj : objects) {
             if (const auto temp_rec = obj->hit(r, ray_tmin, closest_so_far)) {
-                hit_anything = true;
-                closest_so_far = temp_rec.t;
-                rec = temp_rec;
+                recs.emplace_back(*temp_rec);
+                closest_so_far = temp_rec->t;
             }
         }
 
-        return rec;
+        return recs.empty()? std::nullopt : std::optional<hit_record<T>>(recs.back());
     }
 
 };

@@ -12,39 +12,39 @@ public:
     color(std::initializer_list<T> l) : vec3<T>{l} {}
     explicit color(vec3<T> v) : vec3<T>{std::move(v)} {};
 
-    T r() const
+    auto r() const -> T 
     {
         return vec3<T>::e[0];
     }
 
-    T g() const
+    auto g() const -> T 
     {
         return vec3<T>::e[1];
     }
 
-    T b() const 
+    auto b() const -> T 
     {
         return vec3<T>::e[2];
     }
 
-    T &r()
+    auto r() -> T &
     {
         return vec3<T>::e[0];
     }
 
-    T &g()
+    auto g() -> T &
     {
         return vec3<T>::e[1];
     }
 
-    T &b()
+    auto b() -> T &
     {
         return vec3<T>::e[2];
     }
 };
 
 template <typename T>
-inline std::ostream &operator<<(std::ostream &out, color<T> pixel_color) 
+inline auto operator<<(std::ostream &out, color<T> pixel_color) -> std::ostream &
 {
     // Write the translated [0,255] value of each color component.
     out << static_cast<int>(255.999 * pixel_color.x()) << ' '

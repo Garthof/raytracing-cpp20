@@ -3,30 +3,13 @@
 #include "vec3.hpp"
 
 template<typename T>
-class ray
+struct ray
 {
-public:
-    ray() = default;
+    const coord<T> origin;
+    const vec3<T> direction;
 
-    ray(const coord<T> origin, const vec3<T> direction): orig{origin}, dir{direction}
-    {}
-
-    coord<T> origin() const  
-    { 
-        return orig; 
-    }
-
-    vec3<T> direction() const 
-    { 
-        return dir; 
-    }
-
-    coord<T> at(T t) const
+    auto at(T t) const -> coord<T>
     {
-        return static_cast<coord<T>>(orig + t * dir);
+        return static_cast<coord<T>>(origin + t * direction);
     }
-
-private:
-    coord<T> orig;
-    vec3<T> dir;
 };
