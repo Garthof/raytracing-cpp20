@@ -12,7 +12,7 @@ template <typename T>
 auto ray_color(const ray<T> r, const hittable<T> &world) -> color<T>
 {
     const auto unit_direction = r.direction.unit_vector();
-    if (const auto rec = world.hit(std::move(r), 0., rt::infinity)) {
+    if (const auto rec = world.hit(std::move(r), {0., rt::infinity})) {
         return static_cast<color<T>>(0.5 * (rec->normal + vec3{1.0, 1.0, 1.0}));
     }
 

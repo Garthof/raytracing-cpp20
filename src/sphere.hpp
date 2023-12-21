@@ -11,7 +11,7 @@ public:
     sphere(coord<T> t_center, T t_radius) : center{std::move(t_center)}, radius{t_radius}
     {}
 
-    auto hit(ray<T> r, T ray_tmin, T ray_tmax) const -> std::optional<hit_record<T>> override 
+    auto hit(ray<T> r, interval<T> ray_t) const -> std::optional<hit_record<T>> override 
     {
         const auto sqr = [](const auto v) {
             return v * v;
@@ -28,16 +28,12 @@ public:
         }
         const auto sqrtd = std::sqrt(discriminant);
 
-        const auto in_range = [&](const auto v) {
-            return ray_tmin < v && v < ray_tmax;
-        };
-
         const auto find_root_in_range = [&]() {
             auto root = (-half_b - sqrtd) / a;
-            if (!in_range(root)) {
+            if (!ray_t.surrounds(root)) {
                 root = (-half_b + sqrtd) / a;
             }
-            return in_range(root) ? std::optional<T>{root} : std::nullopt;
+            return ray_t.surrounds(root) ? std::optional<T>{root} : std::nullopt;
         };
 
         if (const auto root = find_root_in_range()) {

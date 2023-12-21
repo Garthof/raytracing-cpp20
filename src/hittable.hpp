@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include "interval.hpp"
 #include "ray.hpp"
 #include "vec3.hpp"
 
@@ -24,5 +25,5 @@ class hittable
 {
 public:
     virtual ~hittable() = default;
-    virtual auto hit(ray<T> t_r, T ray_tmin, T ray_tmax) const -> std::optional<hit_record<T>> = 0;
+    virtual auto hit(ray<T> t_r, interval<T> ray_t) const -> std::optional<hit_record<T>> = 0;
 };

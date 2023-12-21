@@ -28,13 +28,13 @@ public:
         objects.emplace_back(std::move(obj));
     }
 
-    auto hit(const ray<T> r, const T ray_tmin, const T ray_tmax) const -> std::optional<hit_record<T>> override
+    auto hit(const ray<T> r, const interval<T> ray_t) const -> std::optional<hit_record<T>> override
     {
         auto recs = std::vector<hit_record<T>>{};
-        auto closest_so_far = ray_tmax;
+        auto closest_so_far = ray_t.max;
 
         for (const auto &obj : objects) {
-            if (const auto temp_rec = obj->hit(r, ray_tmin, closest_so_far)) {
+            if (const auto temp_rec = obj->hit(r, {ray_t.min, closest_so_far})) {
                 recs.emplace_back(*temp_rec);
                 closest_so_far = temp_rec->t;
             }
