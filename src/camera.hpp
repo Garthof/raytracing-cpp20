@@ -90,7 +90,7 @@ private:
         return (px * m_pixel_delta_u) + (py * m_pixel_delta_v);
     }
 
-    auto ray_color(const ray<T> r, const int depth, const hittable<T> &world) const -> color<T> 
+    auto ray_color(ray<T> r, const int depth, const hittable<T> &world) const -> color<T> 
     {
         // If we've exceeded the ray bounce limit, no more light is gathered
         if (depth <= 0) {
@@ -98,7 +98,9 @@ private:
         }
 
         const auto unit_direction = r.direction.unit_vector();
-        if (const auto rec = world.hit(std::move(r), {0., rt::infinity})) {
+
+        constexpr auto surface_epsilon = 0.001; // Start ray slightly above the surface, to avoid rounding errors
+        if (const auto rec = world.hit(std::move(r), {surface_epsilon, rt::infinity})) {
             const auto direction = rt::random_unit_vec_on_hemisphere(rec->normal);
             return static_cast<color<T>>(0.5 * ray_color({rec->pos, direction}, depth - 1, world));
         }
