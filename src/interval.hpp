@@ -8,14 +8,25 @@ struct interval
     T min{+rt::infinity};
     T max{-rt::infinity};
 
-    bool contains(const T t) const 
+    auto contains(const T t) const -> bool
     {
         return min <= t && t <= max;
     }
 
-    bool surrounds(const T t) const 
+    auto surrounds(const T t) const -> bool
     {
         return min < t && t < max;
+    }
+
+    auto clamp(const T t) const -> T
+    {
+        if (t < min) {
+            return min;
+        } else if (t > max) {
+            return max;
+        } else {
+            return t;
+        }
     }
 
     static auto empty() -> interval<T> {
@@ -25,4 +36,4 @@ struct interval
     static auto universe() -> interval<T> {
         return {-rt::infinity, +rt::infinity};
     }
-};
+}; 

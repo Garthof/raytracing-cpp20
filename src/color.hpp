@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "interval.hpp"
 #include "vec3.hpp"
 
 template <typename T>
@@ -43,12 +44,24 @@ public:
     }
 };
 
-template <typename T>
-inline auto operator<<(std::ostream &out, color<T> pixel_color) -> std::ostream &
+template<typename T>
+struct pixel
 {
+    color<T> pixel_color;
+    int samples_per_pixel; 
+};
+
+template <typename T>
+inline auto operator<<(std::ostream &t_out, const pixel<T> t_pixel) -> std::ostream &
+{
+    // Divide the color by the number of samples
+    const auto norm_color = static_cast<color<T>>(t_pixel.pixel_color / static_cast<T>(t_pixel.samples_per_pixel));
+
     // Write the translated [0,255] value of each color component.
-    out << static_cast<int>(255.999 * pixel_color.x()) << ' '
-        << static_cast<int>(255.999 * pixel_color.y()) << ' '
-        << static_cast<int>(255.999 * pixel_color.z()) << '\n';
-    return out;
+    constexpr auto intensity = interval<T>{0.000, 0.999};
+    t_out 
+        << static_cast<int>(256 * intensity.clamp(norm_color.r())) << ' '
+        << static_cast<int>(256 * intensity.clamp(norm_color.g())) << ' '
+        << static_cast<int>(256 * intensity.clamp(norm_color.b())) << '\n';
+    return t_out;
 }
