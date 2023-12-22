@@ -12,6 +12,7 @@ public:
     double aspect_ratio = 1.;   // Ratio of image width over height
     int image_width = 100;      // Rendered image width in pixel count
     int samples_per_pixel = 10; // Count of random samples for each pixel
+    int max_depth = 10;         // Maximum number of ray bounces into scene
 
     auto render(const hittable<T> &world) -> void 
     {
@@ -27,7 +28,7 @@ public:
 
                 for (auto sample = 0; sample < samples_per_pixel; ++sample) {
                     const auto r = get_ray(i, j);
-                    pixel_color += ray_color(std::move(r), world);
+                    pixel_color += ray_color(std::move(r), max_depth, world);
                 }
                 std::cout << pixel{pixel_color, samples_per_pixel};
             }
@@ -89,12 +90,17 @@ private:
         return (px * m_pixel_delta_u) + (py * m_pixel_delta_v);
     }
 
-    auto ray_color(const ray<T> r, const hittable<T> &world) const -> color<T> 
+    auto ray_color(const ray<T> r, const int depth, const hittable<T> &world) const -> color<T> 
     {
+        // If we've exceeded the ray bounce limit, no more light is gathered
+        if (depth <= 0) {
+            return {};
+        }
+
         const auto unit_direction = r.direction.unit_vector();
         if (const auto rec = world.hit(std::move(r), {0., rt::infinity})) {
             const auto direction = rt::random_unit_vec_on_hemisphere(rec->normal);
-            return static_cast<color<T>>(0.5 * ray_color({rec->pos, direction}, world));
+            return static_cast<color<T>>(0.5 * ray_color({rec->pos, direction}, depth - 1, world));
         }
 
         const auto a = (unit_direction.y() + 1.0) * 0.5;
