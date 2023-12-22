@@ -2,6 +2,7 @@
 
 #include "color.hpp"
 #include "hittable.hpp"
+#include "random.hpp"
 #include "vec3.hpp"
 
 template <typename T>
@@ -83,8 +84,8 @@ private:
     auto pixel_sample_square() const -> vec3<T>
     {
         // Compute a random point in the square surrounding a pixel at the origin
-        const auto px = -0.5 + rt::random<T>();
-        const auto py = -0.5 + rt::random<T>();
+        const auto px = -0.5 + rt::random_t<T>();
+        const auto py = -0.5 + rt::random_t<T>();
         return (px * m_pixel_delta_u) + (py * m_pixel_delta_v);
     }
 
@@ -92,7 +93,8 @@ private:
     {
         const auto unit_direction = r.direction.unit_vector();
         if (const auto rec = world.hit(std::move(r), {0., rt::infinity})) {
-            return static_cast<color<T>>(0.5 * (rec->normal + vec3{1.0, 1.0, 1.0}));
+            const auto direction = rt::random_unit_vec_on_hemisphere(rec->normal);
+            return static_cast<color<T>>(0.5 * ray_color({rec->pos, direction}, world));
         }
 
         const auto a = (unit_direction.y() + 1.0) * 0.5;

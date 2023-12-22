@@ -8,6 +8,8 @@
 #include <numeric>
 #include <stdexcept>
 
+#include "rtweekend.hpp"
+
 template <typename T> 
 class vec3 
 {
