@@ -101,7 +101,7 @@ private:
 
         constexpr auto surface_epsilon = 0.001; // Start ray slightly above the surface, to avoid rounding errors
         if (const auto rec = world.hit(std::move(r), {surface_epsilon, rt::infinity})) {
-            const auto direction = rt::random_unit_vec_on_hemisphere(rec->normal);
+            const auto direction = rec->normal + rt::random_unit_vec_on_sphere<T>();
             return static_cast<color<T>>(0.5 * ray_color({rec->pos, direction}, depth - 1, world));
         }
 
