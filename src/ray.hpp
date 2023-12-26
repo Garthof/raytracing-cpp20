@@ -5,8 +5,8 @@
 template<typename T>
 struct ray
 {
-    const coord<T> origin;
-    const vec3<T> direction;
+    coord<T> origin;
+    vec3<T> direction;
 
     auto at(T t) const -> coord<T>
     {

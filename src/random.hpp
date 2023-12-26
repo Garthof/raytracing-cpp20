@@ -18,7 +18,7 @@ inline auto random_t(const T min = 0., const T max = 1.) -> T
 template<typename T>
 inline auto random_v(const T min = 0., const T max = 1.) -> vec3<T>
 {
-    return {random_t<T>(min, max), random_t<T>(min, max), random_t<T>(min, max)};
+    return {random_t(min, max), random_t(min, max), random_t(min, max)};
 }    
 
 template<typename T>

@@ -33,22 +33,22 @@ public:
 
     auto x() const -> T
     {
-        return vec3<T>::e[0];
+        return vec3::e[0];
     }
 
     auto y() const -> T
     {
-        return vec3<T>::e[1];
+        return vec3::e[1];
     }
 
     auto z() const -> T
     {
-        return vec3<T>::e[2];
+        return vec3::e[2];
     }
 
     auto x() -> T &
     {
-        return vec3<T>::e[0];
+        return vec3::e[0];
     }
 
     auto y() -> T &
@@ -58,7 +58,7 @@ public:
 
     auto z() -> T &
     {
-        return vec3<T>::e[2];
+        return vec3::e[2];
     }
 
     auto operator[](index_type i) const -> T
@@ -71,12 +71,12 @@ public:
         return e[i];
     }
 
-    auto operator-() const -> vec3<T>
+    auto operator-() const -> vec3
     { 
         return {-e[0], -e[1], -e[2]}; 
     }
 
-    auto operator+=(const vec3<T> v) -> vec3<T> & 
+    auto operator+=(const vec3 v) -> vec3 & 
     {
         e[0] += v[0];
         e[1] += v[1];
@@ -84,7 +84,7 @@ public:
         return *this;
     }
 
-    auto operator-=(const vec3<T> v) -> vec3<T> & 
+    auto operator-=(const vec3 v) -> vec3 & 
     {
         *this += -v;
         return *this;
@@ -99,7 +99,7 @@ public:
     }
 
     template<typename U>
-    auto operator*=(const U u) -> vec3<T> &
+    auto operator*=(const U u) -> vec3 &
     {
         e[0] *= static_cast<T>(u);
         e[1] *= static_cast<T>(u);
@@ -108,7 +108,7 @@ public:
     }
 
     template<typename U>
-    auto operator/=(const U u) -> vec3<T> & 
+    auto operator/=(const U u) -> vec3 & 
     {
         return *this *= static_cast<T>(1) / static_cast<T>(u);
     }
@@ -124,7 +124,7 @@ public:
                                [](const T a, const T b) { return a + b * b; });
     }
 
-    auto unit_vector() const -> vec3<T> 
+    auto unit_vector() const -> vec3
     {
         return *this / length();
     }

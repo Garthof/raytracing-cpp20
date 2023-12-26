@@ -60,7 +60,7 @@ inline auto operator<<(std::ostream &t_out, const pixel<T> t_pixel) -> std::ostr
     const auto norm_color = static_cast<color<T>>(t_pixel.pixel_color / static_cast<T>(t_pixel.samples_per_pixel));
 
     // Transform color from linear to gamma space
-    constexpr auto linear_to_gamma = [](const color<T> linear_color) -> color<T> {
+    constexpr auto linear_to_gamma = [](const auto linear_color) -> color<T> {
         return {std::sqrt(linear_color.r()), std::sqrt(linear_color.g()), std::sqrt(linear_color.b())};
     };
     const auto gamma_color = linear_to_gamma(norm_color);

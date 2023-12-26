@@ -9,10 +9,10 @@
 template <typename T>
 struct hit_record
 {
-    const T t;
-    const coord<T> pos;
-    const bool front_face;
-    const vec3<T> normal;
+    T t;
+    coord<T> pos;
+    bool front_face;
+    vec3<T> normal;
 
     /// @param t_outward_normal Unit length vector at the hit position facing outwards
     hit_record(const ray<T> t_r, const T t_t, const vec3<T> t_outward_normal) : 

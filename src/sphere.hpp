@@ -39,12 +39,12 @@ public:
         if (const auto root = find_root_in_range()) {
             const auto pos = r.at(*root);
             const auto outward_normal = static_cast<vec3<T>>((pos - center) / radius).unit_vector();
-            return hit_record<T>{std::move(r), *root, outward_normal};
+            return hit_record{std::move(r), *root, outward_normal};
         }
 
         return std::nullopt;
     }
 
-    const coord<T> center;
-    const T radius;
+    coord<T> center;
+    T radius;
 };

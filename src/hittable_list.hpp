@@ -30,17 +30,17 @@ public:
 
     auto hit(const ray<T> r, const interval<T> ray_t) const -> std::optional<hit_record<T>> override
     {
-        auto recs = std::vector<hit_record<T>>{};
         auto closest_so_far = ray_t.max;
+        auto rec = std::optional<hit_record<T>>{};
 
         for (const auto &obj : objects) {
-            if (const auto temp_rec = obj->hit(r, {ray_t.min, closest_so_far})) {
-                recs.emplace_back(*temp_rec);
-                closest_so_far = temp_rec->t;
+            if (auto rec_found = obj->hit(r, {ray_t.min, closest_so_far})) {
+                rec = rec_found;
+                closest_so_far = rec_found->t;            
             }
         }
 
-        return recs.empty()? std::nullopt : std::optional<hit_record<T>>(recs.back());
+        return rec;
     }
 
 };
