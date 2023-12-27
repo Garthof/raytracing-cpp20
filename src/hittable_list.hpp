@@ -35,8 +35,8 @@ public:
 
         for (const auto &obj : objects) {
             if (auto rec_found = obj->hit(r, {ray_t.min, closest_so_far})) {
-                rec = rec_found;
-                closest_so_far = rec_found->t;            
+                rec = std::move(rec_found);
+                closest_so_far = rec->t;            
             }
         }
 

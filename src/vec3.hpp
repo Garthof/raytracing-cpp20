@@ -6,11 +6,15 @@
 #include <initializer_list>
 #include <iostream>
 #include <numeric>
+#include <type_traits>
 #include <stdexcept>
 
 #include "rtweekend.hpp"
 
-template <typename T> 
+template <typename T>
+concept IsScalar = std::is_scalar_v<T>;
+
+template <IsScalar T> 
 class vec3 
 {
 public:
@@ -90,7 +94,7 @@ public:
         return *this;
     }
 
-    auto operator*=(const vec3<T> v) -> vec3<T> &
+    auto operator*=(const vec3<T> v) -> vec3 &
     {
         e[0] *= v[0];
         e[1] *= v[1];
@@ -98,7 +102,7 @@ public:
         return *this;
     }
 
-    template<typename U>
+    template<IsScalar U>
     auto operator*=(const U u) -> vec3 &
     {
         e[0] *= static_cast<T>(u);
@@ -107,7 +111,7 @@ public:
         return *this;
     }
 
-    template<typename U>
+    template<IsScalar U>
     auto operator/=(const U u) -> vec3 & 
     {
         return *this *= static_cast<T>(1) / static_cast<T>(u);
@@ -127,6 +131,15 @@ public:
     auto unit_vector() const -> vec3
     {
         return *this / length();
+    }
+
+    /// @return true if the vector is close to zero in all dimensions 
+    auto near_zero(const T eps = 1e-8) const -> bool
+    {
+        const auto abs_near_zero = [&](const auto value) {
+            return std::fabs(value) < eps;
+        };
+        return abs_near_zero(e[0]) && abs_near_zero(e[1]) && abs_near_zero(e[2]);
     }
 };
 
@@ -157,14 +170,14 @@ inline auto operator*(vec3<T> lhs, const vec3<T> rhs) -> vec3<T>
     return lhs;
 }
 
-template <typename T, typename U>
+template <typename T, IsScalar U>
 inline auto operator*(const U u, vec3<T> v) -> vec3<T> 
 {
     v *= u;
     return v;
 }
 
-template <typename T, typename U>
+template <typename T, IsScalar U>
 inline auto operator*(vec3<T> v, const U u) -> vec3<T> 
 {
     return u * std::move(v);
@@ -190,6 +203,12 @@ inline auto cross(const vec3<T> u, const vec3<T> v) -> vec3<T>
     return {u.e[1] * v.e[2] - u.e[2] * v.e[1],
             u.e[2] * v.e[0] - u.e[0] * v.e[2],
             u.e[0] * v.e[1] - u.e[1] * v.e[0]};
+}
+
+template <typename T>
+inline auto reflect(const vec3<T> v, const vec3<T> n) -> vec3<T>
+{
+    return v - 2 * dot(v, n) * n;
 }
 
 template <typename T>

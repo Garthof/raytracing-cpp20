@@ -100,9 +100,11 @@ private:
         const auto unit_direction = r.direction.unit_vector();
 
         constexpr auto surface_epsilon = 0.001; // Start ray slightly above the surface, to avoid rounding errors
-        if (const auto rec = world.hit(std::move(r), {surface_epsilon, rt::infinity})) {
-            const auto direction = rec->normal + rt::random_unit_vec_on_sphere<T>();
-            return static_cast<color<T>>(0.5 * ray_color({rec->pos, direction}, depth - 1, world));
+        if (const auto rec = world.hit(r, {surface_epsilon, rt::infinity})) {
+            if (auto scatter_result = rec->mat->scatter(r, *rec)) {
+                return static_cast<color<T>>(scatter_result->attenuation * ray_color(scatter_result->scattered, depth - 1, world));
+            }
+            return {};
         }
 
         const auto a = (unit_direction.y() + 1.0) * 0.5;
