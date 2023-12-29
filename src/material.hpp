@@ -75,9 +75,15 @@ public:
         const auto refraction_ratio = rec.front_face ? 1. / m_ir : m_ir;
 
         const auto unit_direction = r_in.direction.unit_vector();
-        const auto refracted = refract(unit_direction, rec.normal, refraction_ratio);
+        const auto cos_theta = std::min(dot(-unit_direction, rec.normal), 1.);
+        const auto sin_theta = std::sqrt(1. - cos_theta * cos_theta);
 
-        return scatter_result{{rec.pos, refracted}, attenuation};
+        const auto can_refract = refraction_ratio * sin_theta <= 1.;
+        const auto direction = can_refract ? 
+            refract(unit_direction, rec.normal, refraction_ratio)
+            : reflect(unit_direction, rec.normal);
+
+        return scatter_result{{rec.pos, direction}, attenuation};
     }  
 
 private:
