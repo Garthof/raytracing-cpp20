@@ -73,17 +73,15 @@ public:
     {
         const auto attenuation = color{1., 1., 1.};
         const auto refraction_ratio = rec.front_face ? 1. / m_ir : m_ir;
-
         const auto unit_direction = r_in.direction.unit_vector();
-        const auto cos_theta = std::min(dot(-unit_direction, rec.normal), 1.);
-        const auto sin_theta = std::sqrt(1. - cos_theta * cos_theta);
+        
+        if (const auto refraction_result = refract(unit_direction, rec.normal, refraction_ratio)) {
+            return scatter_result{{rec.pos, *refraction_result}, attenuation};
+        }
 
-        const auto can_refract = refraction_ratio * sin_theta <= 1.;
-        const auto direction = can_refract ? 
-            refract(unit_direction, rec.normal, refraction_ratio)
-            : reflect(unit_direction, rec.normal);
-
-        return scatter_result{{rec.pos, direction}, attenuation};
+        // If the ray cannot refract, it reflects instead
+        const auto reflection_result = reflect(unit_direction, rec.normal);
+        return scatter_result{{rec.pos, reflection_result}, attenuation};
     }  
 
 private:
