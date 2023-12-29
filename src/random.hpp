@@ -48,5 +48,18 @@ inline auto random_unit_vec_on_hemisphere(vec3<T> normal) -> vec3<T>
             ? vec_on_sphere
             : -vec_on_sphere; 
 }
+
+template<typename T>
+inline auto random_vec_in_unit_disk() -> vec3<T>
+{
+    while (true) {
+        const auto p = vec3{random_t(-1., +1.), random_t(-1., +1.), 0.};
+        if (p.length_squared() < 1.) {
+            return p;
+        }
+    }
+
+    throw std::logic_error{"random_in_unit_disc: vec not found"};
+}
 } // namespace rt
  
