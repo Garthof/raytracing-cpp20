@@ -13,12 +13,13 @@
 
 auto main() -> int
 {
+
     // World
-    
+
     const auto material_ground = std::make_shared<lambertian<rt::scalar_type>>(color{0.8, 0.8, 0.0});
     const auto material_center = std::make_shared<lambertian<rt::scalar_type>>(color{0.1, 0.2, 0.5});
     const auto material_left   = std::make_shared<dielectric<rt::scalar_type>>(1.5);
-    const auto material_right  = std::make_shared<metal<rt::scalar_type>>(color{0.8, 0.6, 0.2}, 0.0);
+    const auto material_right  = std::make_shared<metal<rt::scalar_type>>(color{0.8, 0.6, 0.2}, 0.);
 
     hittable_list<rt::scalar_type> world;
     world.add(std::make_shared<sphere<rt::scalar_type>>(coord{ 0.0, -100.5, -1.0}, 100.0, material_ground));
@@ -30,10 +31,16 @@ auto main() -> int
     // Camera
 
     camera<rt::scalar_type> cam;
+
     cam.aspect_ratio = 16. / 9.;
     cam.image_width = 400;
     cam.samples_per_pixel = 100;
     cam.max_depth = 50;
+    
+    cam.vfov = 20.;
+    cam.lookfrom = coord{-2.,  2.,  1.};
+    cam.lookat   = coord{ 0.,  0., -1.};
+    cam.vup      = vec3 { 0. , 1.,  0.};
 
     // Render
 

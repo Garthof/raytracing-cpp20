@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "color.hpp"
 #include "hittable.hpp"
 #include "random.hpp"
@@ -13,6 +15,11 @@ public:
     int image_width = 100;      // Rendered image width in pixel count
     int samples_per_pixel = 10; // Count of random samples for each pixel
     int max_depth = 10;         // Maximum number of ray bounces into scene
+
+    double vfov = 90;                   // Vertical view angle (field of view)
+    coord<T> lookfrom{ 0.,  0., -1.};   // Point camera is looking from
+    coord<T> lookat  { 0.,  0.,  0.};   // Point camera is looking at
+    vec3<T>  vup     { 0.,  1.,  0.};   // Camera-relative "up" direction
 
     auto render(const hittable<T> &world) -> void 
     {
@@ -43,6 +50,7 @@ private:
     coord<T> m_pixel00_loc{};   // Location of pixel 0, 0
     vec3<T> m_pixel_delta_u{};  // Offset to pixel to the right
     vec3<T> m_pixel_delta_v{};  // Offset to pixel below
+    vec3<T> m_u, m_v, m_w;      // Camera frame basis vectors
     
     auto initialize() -> void 
     {
@@ -52,23 +60,31 @@ private:
             return tentative_image_height < 1 ? 1 : tentative_image_height;
         }();
 
-        m_center = coord{0., 0., 0.};
+        m_center = lookfrom;
 
         // Determine viewport dimensions
-        constexpr auto focal_length = 1.0;
-        constexpr auto viewport_height = 2.0;
-        const auto viewport_width = viewport_height * (static_cast<double>(image_width) / m_image_height);
+        const auto focal_length = (lookfrom - lookat).length();
+        const auto theta = rt::degrees_to_radians(vfov);
+        const auto h = std::tan(theta / 2.);
+
+        const auto viewport_height = 2. * h * focal_length;
+        const auto viewport_width = viewport_height * (static_cast<double>(image_width) / static_cast<double>(m_image_height));
+
+        // Calculate the u,v,w unit basis vectors for the camera coordinate frame
+        m_w = (lookfrom - lookat).unit_vector();
+        m_u = cross(vup, m_w).unit_vector();
+        m_v = cross(m_w, m_u);
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        const auto viewport_u = vec3{viewport_width, 0., 0.};
-        const auto viewport_v = vec3{0., -viewport_height, -0.};
+        const auto viewport_u = viewport_width * m_u;
+        const auto viewport_v = viewport_height * -m_v;
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
         m_pixel_delta_u = viewport_u / image_width;
         m_pixel_delta_v = viewport_v / m_image_height;
 
         // Calculate the location of the upper left pixel.
-        const auto viewport_upper_left = m_center - vec3{0., 0., focal_length} - viewport_u / 2 - viewport_v / 2;
+        const auto viewport_upper_left = m_center - focal_length * m_w - viewport_u / 2 - viewport_v / 2;
         m_pixel00_loc = static_cast<coord<T>>(viewport_upper_left + (m_pixel_delta_u + m_pixel_delta_v) / 2.);
     }
 
